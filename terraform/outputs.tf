@@ -33,3 +33,24 @@ output "security_group_id" {
   description = "ID of the security group"
   value       = aws_security_group.k8s_instance.id
 }
+
+# DNS Outputs (only populated when manage_dns = true)
+output "rancher_url" {
+  description = "URL to access Rancher UI"
+  value       = var.manage_dns ? "https://${aws_route53_record.rancher[0].fqdn}" : "https://rancher.emelz.org (DNS managed manually)"
+}
+
+output "dev_url" {
+  description = "URL for development/demo applications"
+  value       = var.manage_dns ? "https://${aws_route53_record.dev[0].fqdn}" : "https://dev.emelz.org (DNS managed manually)"
+}
+
+output "dns_managed" {
+  description = "Whether DNS is managed by Terraform"
+  value       = var.manage_dns
+}
+
+output "hosted_zone_id" {
+  description = "Route53 hosted zone ID (if DNS is managed)"
+  value       = var.manage_dns ? data.aws_route53_zone.main[0].zone_id : "N/A - Set manage_dns = true"
+}
