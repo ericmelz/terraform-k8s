@@ -48,6 +48,12 @@ resource "aws_instance" "k8s_rancher" {
               #!/bin/bash
               set -e
 
+              # Log all output
+              exec > >(tee /var/log/user-data.log)
+              exec 2>&1
+
+              echo "Starting instance setup..."
+
               # Update system
               apt-get update
               apt-get upgrade -y
@@ -67,7 +73,8 @@ resource "aws_instance" "k8s_rancher" {
               # Install helm
               curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-              echo "Setup complete" > /var/log/user-data.log
+              echo "Base setup complete"
+              echo "To complete setup, run: sudo /home/ubuntu/setup-all.sh"
               EOF
 
   tags = {
