@@ -36,18 +36,23 @@ if ! command -v k3s &> /dev/null; then
     exit 1
 fi
 
-# Update K3s configuration to bind to Tailscale IP
-# This allows kubectl to connect via Tailscale
-sudo systemctl stop k3s || true
-sleep 2
+# Create K3s config directory if it doesn't exist
+sudo mkdir -p /etc/rancher/k3s
 
-# Add tls-san for Tailscale IP
-if ! grep -q "tls-san" /etc/systemd/system/k3s.service; then
-    sudo sed -i "s|ExecStart=/usr/local/bin/k3s \\\\|ExecStart=/usr/local/bin/k3s \\\\\n    --tls-san=$TAILSCALE_IP \\\\\n    --tls-san=$(hostname) \\\\|" /etc/systemd/system/k3s.service
-fi
+# Create or update K3s config file
+echo "Creating K3s configuration..."
+sudo tee /etc/rancher/k3s/config.yaml > /dev/null <<EOF
+disable:
+  - traefik
+tls-san:
+  - $TAILSCALE_IP
+  - $(hostname)
+  - $(hostname -f)
+EOF
 
-sudo systemctl daemon-reload
-sudo systemctl start k3s
+# Restart K3s to apply configuration
+echo "Restarting K3s..."
+sudo systemctl restart k3s
 sleep 10
 
 # Wait for K3s to be ready
@@ -63,6 +68,7 @@ done
 
 if [ $timeout -le 0 ]; then
     echo "ERROR: K3s failed to start"
+    echo "Check logs with: sudo journalctl -xeu k3s.service"
     exit 1
 fi
 
