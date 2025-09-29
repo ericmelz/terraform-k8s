@@ -11,12 +11,19 @@ Automated installation scripts for the Kubernetes stack with Rancher, Traefik, a
    - Waits for cluster to be ready
    - Verifies installation
 
-2. **`install-traefik.sh`** - Install Traefik ingress controller
+2. **`install-tailscale.sh`** - Install Tailscale VPN
+   - Installs Tailscale package
+   - Joins the tailnet
+   - Configures K3s for Tailscale access
+   - Environment variables:
+     - `TAILSCALE_AUTH_KEY` (required) - Get from https://login.tailscale.com/admin/settings/keys
+
+3. **`install-traefik.sh`** - Install Traefik ingress controller
    - Installs CRDs and RBAC
    - Deploys Traefik with NodePort (30080)
    - Configures proper permissions
 
-3. **`install-rancher.sh`** - Install Rancher management UI
+4. **`install-rancher.sh`** - Install Rancher management UI
    - Installs cert-manager
    - Deploys Rancher via Helm
    - Configures for external TLS termination
@@ -24,11 +31,11 @@ Automated installation scripts for the Kubernetes stack with Rancher, Traefik, a
      - `RANCHER_HOSTNAME` (default: rancher.emelz.org)
      - `RANCHER_PASSWORD` (default: admin)
 
-4. **`install-nginx.sh`** - Install Nginx and Certbot
+5. **`install-nginx.sh`** - Install Nginx and Certbot
    - Installs packages
    - Enables service
 
-5. **`configure-nginx.sh`** - Configure Nginx with SSL and proxying
+6. **`configure-nginx.sh`** - Configure Nginx with SSL and proxying
    - Obtains Let's Encrypt certificates
    - Configures reverse proxy to Rancher and Traefik
    - Sets up HTTPS redirects
@@ -62,6 +69,8 @@ sudo bash scripts/setup-all.sh
 ```bash
 # Install components individually
 sudo bash scripts/install-k3s.sh
+export TAILSCALE_AUTH_KEY="tskey-auth-..."
+sudo -E bash scripts/install-tailscale.sh
 sudo bash scripts/install-traefik.sh
 sudo bash scripts/install-rancher.sh
 sudo bash scripts/install-nginx.sh
@@ -72,6 +81,7 @@ sudo bash scripts/configure-nginx.sh
 
 ```bash
 # Set environment variables before running
+export TAILSCALE_AUTH_KEY="tskey-auth-..."  # Required for Tailscale
 export RANCHER_HOSTNAME="rancher.yourdomain.com"
 export DEV_HOSTNAME="dev.yourdomain.com"
 export RANCHER_PASSWORD="your-secure-password"
@@ -189,9 +199,32 @@ sudo rm /etc/nginx/sites-enabled/k8s-proxy
 # Then rerun setup scripts
 ```
 
+## Accessing K3s via Tailscale
+
+After running `install-tailscale.sh`, you can access the K3s cluster from your laptop over Tailscale:
+
+1. Install Tailscale on your laptop: https://tailscale.com/download
+2. Join the same tailnet
+3. Get the Tailscale IP of your instance (shown in install-tailscale.sh output)
+4. Copy the kubeconfig:
+   ```bash
+   # Get Tailscale IP from the instance
+   TAILSCALE_IP=$(ssh -i ../ssh-keys/k8s-rancher-key.pem ubuntu@<public-ip> "tailscale ip -4")
+
+   # Copy kubeconfig
+   scp -i ../ssh-keys/k8s-rancher-key.pem ubuntu@$TAILSCALE_IP:/etc/rancher/k3s/k3s.yaml ~/.kube/k3s-tailscale.yaml
+
+   # Update server URL in kubeconfig
+   sed -i '' "s|127.0.0.1:6443|$TAILSCALE_IP:6443|g" ~/.kube/k3s-tailscale.yaml
+
+   # Use kubectl
+   export KUBECONFIG=~/.kube/k3s-tailscale.yaml
+   kubectl get nodes
+   ```
+
 ## Future Enhancements
 
-- [ ] Add Tailscale installation script
+- [x] Add Tailscale installation script
 - [ ] Add demo app deployment script
 - [ ] Add backup/restore scripts
 - [ ] Add monitoring setup (Prometheus/Grafana)

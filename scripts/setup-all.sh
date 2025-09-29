@@ -35,6 +35,7 @@ run_script() {
 
 # Install components in order
 run_script "install-k3s.sh"
+run_script "install-tailscale.sh"
 run_script "install-traefik.sh"
 run_script "install-rancher.sh"
 run_script "install-nginx.sh"
