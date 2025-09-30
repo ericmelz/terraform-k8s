@@ -1,0 +1,52 @@
+name: Sync Namespaces
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'k8s/namespaces/**'
+  workflow_dispatch:
+
+jobs:
+  sync-namespaces:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Tailscale
+        uses: tailscale/github-action@v2
+        with:
+          oauth-client-id: ${{ secrets.TAILSCALE_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TAILSCALE_OAUTH_CLIENT_SECRET }}
+          tags: tag:ci
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
+      - name: Configure kubectl
+        env:
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
+        run: |
+          mkdir -p $HOME/.kube
+          echo "$KUBECONFIG_DATA" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Verify cluster connection
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Apply namespace manifests
+        run: |
+          echo "Applying namespace configurations..."
+          kubectl apply -f k8s/namespaces/
+
+      - name: List namespaces
+        run: |
+          echo "Current namespaces:"
+          kubectl get namespaces -l managed-by=gitops
