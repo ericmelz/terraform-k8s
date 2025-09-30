@@ -1,0 +1,43 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hosty-dev
+  namespace: dev-weighter-net
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`dev.weighter.net`)
+      kind: Rule
+      services:
+        - name: hosty-dev
+          port: 8000
+  tls:
+    certResolver: letsencrypt
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hosty-dev-http
+  namespace: dev-weighter-net
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`dev.weighter.net`)
+      kind: Rule
+      services:
+        - name: hosty-dev
+          port: 8000
+      middlewares:
+        - name: redirect-https
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: dev-weighter-net
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

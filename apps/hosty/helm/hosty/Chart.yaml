@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hosty
+description: A Helm chart for deploying the Hosty FastAPI application
+type: application
+version: 0.1.0
+appVersion: "latest"
