@@ -19,7 +19,13 @@ curl -fsSL https://tailscale.com/install.sh | sh
 
 # Start and authenticate Tailscale
 echo "Connecting to Tailscale network..."
-sudo tailscale up --auth-key="$TAILSCALE_AUTH_KEY" --accept-routes
+# Check if auth key starts with tskey-client (OAuth key) and add --advertise-tags
+if [[ "$TAILSCALE_AUTH_KEY" == tskey-client-* ]]; then
+    echo "Detected OAuth client key, using --advertise-tags=tag:ci"
+    sudo tailscale up --auth-key="$TAILSCALE_AUTH_KEY" --advertise-tags=tag:ci --accept-routes
+else
+    sudo tailscale up --auth-key="$TAILSCALE_AUTH_KEY" --accept-routes
+fi
 
 # Get Tailscale IP
 echo "Getting Tailscale IP address..."
