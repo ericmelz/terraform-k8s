@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "hosty.labels" . | nindent 4 }}
 binaryData:
-  .env.gpg: {{ .Values.encryptedConfig | b64enc | quote }}
+  .env.gpg: {{ .Values.encryptedConfig | quote }}
 {{- end }}
