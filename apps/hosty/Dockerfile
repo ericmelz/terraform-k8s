@@ -11,8 +11,8 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 COPY pyproject.toml .
 COPY main.py .
 
-# Install dependencies
-RUN uv pip install --system -e .
+# Install dependencies directly (not editable mode for Docker)
+RUN uv pip install --system fastapi uvicorn[standard]
 
 # Expose port
 EXPOSE 8000
