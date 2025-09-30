@@ -24,11 +24,20 @@ spec:
         - name: http
           containerPort: 8000
           protocol: TCP
-        {{- if .Values.env }}
         env:
+        {{- if .Values.env }}
         {{- range $key, $value := .Values.env }}
         - name: {{ $key }}
           value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.secrets }}
+        {{- range $key, $value := .Values.secrets }}
+        - name: {{ $key }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "hosty.fullname" $ }}
+              key: {{ $key }}
         {{- end }}
         {{- end }}
         livenessProbe:

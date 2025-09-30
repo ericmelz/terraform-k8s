@@ -1,3 +1,6 @@
 # Development environment configuration
 env:
   NON_SECRET_ENV_VAR: "dev-environment-value"
+
+secrets:
+  SECRET_ENV_VAR: "dev-secret-value"

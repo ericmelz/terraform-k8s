@@ -52,5 +52,5 @@ Use fields in the output of the api response.  Example:
 
 We will proceed in steps:
 1. Add a non-secret env var to hostly.  Use helm values with different environments like dev, prod.
+2. Add a secret env var to hostly.  Demo with different environments like dev, prod.
 
-Future steps will be placed here.

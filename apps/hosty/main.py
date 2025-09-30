@@ -16,12 +16,14 @@ async def get_host(request: Request):
 
     # Read configuration from environment variables
     non_secret_env_var = os.getenv("NON_SECRET_ENV_VAR", "default-value")
+    secret_env_var = os.getenv("SECRET_ENV_VAR", "default-secret")
 
     return JSONResponse(
         content={
             "host": host,
             "message": f"I'm being hit from {host}!",
             "nonSecretEnvVar": non_secret_env_var,
+            "secretEnvVar": secret_env_var,
         }
     )
 

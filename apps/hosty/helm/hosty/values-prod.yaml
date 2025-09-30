@@ -1,3 +1,6 @@
 # Production environment configuration
 env:
   NON_SECRET_ENV_VAR: "prod-environment-value"
+
+secrets:
+  SECRET_ENV_VAR: "prod-secret-value"
