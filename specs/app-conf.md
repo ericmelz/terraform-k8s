@@ -53,4 +53,20 @@ Use fields in the output of the api response.  Example:
 We will proceed in steps:
 1. Add a non-secret env var to hostly.  Use helm values with different environments like dev, prod.
 2. Add a secret env var to hostly.  Demo with different environments like dev, prod.
-
+3. Similar to the management of kubernetes namespaces, create a gitops style workflow
+   for managing configuration that's stored on disk.  Encrypted configuration should live
+   in a directory named app-conf and should have encrypted files for various environments.
+   There should be a template directory that contains decrypted versions of the files,
+   with dummy values for secrets.  There should be a script that uses secrets set in
+   the environment to generate actual configuration files and generate decrypted versions.
+   The script should also encrypt the generated conf file and update the appropriate
+   files in app-conf.  
+   Encryption should use gpg, and there should be different GPG_PASSPHRASES used
+   per host + environment.
+   On the kubernetes side, there should be a volume that mounts the encrypted conf.
+   Init containers should be used to decrypt the conf into a volume that's attached
+   to the app container so that it can use the decrypted conf.
+   Committing files in the app-conf directory should trigger a github action
+   that copies the encrypted configuration files to a location on disk in the
+   kubernetes cluster that is used by the pods for configuration.
+   Implement this and demo it as in the previous examples with hostly.
