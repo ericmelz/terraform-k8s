@@ -1,6 +1,6 @@
 # Personal todo list
 * namespaces
-  * emelz-org, weighter-net
+  * emelz-org, weighter-net, dev-weighter-net
   * use gitops to manage namespaces
   * add weighter-org
 * demo app
