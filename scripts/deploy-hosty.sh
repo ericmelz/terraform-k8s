@@ -51,18 +51,20 @@ cd terraform-k8s
 echo "Pulling latest changes..."
 git pull
 
-# Deploy Hosty to dev namespace
+# Deploy Hosty to dev namespace with dev-specific values
 echo "Deploying Hosty to dev-weighter-net namespace..."
 helm upgrade --install hosty-dev ./apps/hosty/helm/hosty \
     --namespace dev-weighter-net \
     --create-namespace \
+    --values ./apps/hosty/helm/hosty/values-dev.yaml \
     --wait
 
-# Deploy Hosty to prod namespace
+# Deploy Hosty to prod namespace with prod-specific values
 echo "Deploying Hosty to weighter-org namespace..."
 helm upgrade --install hosty-prod ./apps/hosty/helm/hosty \
     --namespace weighter-org \
     --create-namespace \
+    --values ./apps/hosty/helm/hosty/values-prod.yaml \
     --wait
 
 echo "✓ Hosty deployed successfully"

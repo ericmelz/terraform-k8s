@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
@@ -12,10 +13,15 @@ app = FastAPI(
 async def get_host(request: Request):
     """Return the host header from the request."""
     host = request.headers.get("host", "unknown")
+
+    # Read configuration from environment variables
+    non_secret_env_var = os.getenv("NON_SECRET_ENV_VAR", "default-value")
+
     return JSONResponse(
         content={
             "host": host,
             "message": f"I'm being hit from {host}!",
+            "nonSecretEnvVar": non_secret_env_var,
         }
     )
 

@@ -8,6 +8,10 @@ image:
 nameOverride: ""
 fullnameOverride: ""
 
+# Environment variables for the application
+env:
+  NON_SECRET_ENV_VAR: "default-value"
+
 service:
   type: ClusterIP
   port: 8000
