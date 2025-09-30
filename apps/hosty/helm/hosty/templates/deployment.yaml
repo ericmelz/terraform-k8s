@@ -16,6 +16,33 @@ spec:
       labels:
         {{- include "hosty.selectorLabels" . | nindent 8 }}
     spec:
+      {{- if .Values.encryptedConfig }}
+      initContainers:
+      - name: decrypt-config
+        image: alpine:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          apk add --no-cache gnupg
+          echo "Decrypting configuration..."
+          gpg --batch --passphrase "$GPG_PASSPHRASE" \
+            --decrypt /encrypted-config/.env.gpg > /decrypted-config/.env
+          echo "Configuration decrypted successfully"
+          ls -la /decrypted-config/
+        env:
+        - name: GPG_PASSPHRASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "hosty.fullname" . }}
+              key: GPG_PASSPHRASE
+        volumeMounts:
+        - name: encrypted-config
+          mountPath: /encrypted-config
+          readOnly: true
+        - name: decrypted-config
+          mountPath: /decrypted-config
+      {{- end }}
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -40,9 +67,23 @@ spec:
               key: {{ $key }}
         {{- end }}
         {{- end }}
+        {{- if .Values.encryptedConfig }}
+        volumeMounts:
+        - name: decrypted-config
+          mountPath: /app/config
+          readOnly: true
+        {{- end }}
         livenessProbe:
           {{- toYaml .Values.livenessProbe | nindent 10 }}
         readinessProbe:
           {{- toYaml .Values.readinessProbe | nindent 10 }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+      {{- if .Values.encryptedConfig }}
+      volumes:
+      - name: encrypted-config
+        configMap:
+          name: {{ include "hosty.fullname" . }}-encrypted-config
+      - name: decrypted-config
+        emptyDir: {}
+      {{- end }}

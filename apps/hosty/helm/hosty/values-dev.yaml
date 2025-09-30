@@ -4,3 +4,7 @@ env:
 
 secrets:
   SECRET_ENV_VAR: "dev-secret-value"
+  GPG_PASSPHRASE: "dev-passphrase-12345"
+
+# Encrypted configuration file (base64 encoded .env.gpg)
+encryptedConfig: "jA0ECQMIL+wZK4KRZST/0sAdAUd7hNTiSFWWIRCuMnb8GKHqr6LK0R+FzSNkC20xvO6/ac6NMocelQMynjTs/YFVHpxrcldekgz/yrJMnENllTYtR3kxG2QtHgQxDUDtalEhzV917DgJt206Fnx8O+6Azo3b+EJ7MUlvW9nvoN+zEOTwCRgS5lZ6gI0Ge2KivKVyk1zIwtZgOz7tolKsiQk9/70scbnUa0p1/QF1ZuG1l6DiSySst5zyqIzxLqyn58GTunsAWpfPVE48bqdE7La4jHzRBs1x+OUnFnncFl2PFpvHC8i/gx3ufsNKNWE="

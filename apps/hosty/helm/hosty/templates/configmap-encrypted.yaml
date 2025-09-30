@@ -1,0 +1,10 @@
+{{- if .Values.encryptedConfig }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hosty.fullname" . }}-encrypted-config
+  labels:
+    {{- include "hosty.labels" . | nindent 4 }}
+binaryData:
+  .env.gpg: {{ .Values.encryptedConfig | b64enc | quote }}
+{{- end }}

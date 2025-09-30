@@ -4,3 +4,7 @@ env:
 
 secrets:
   SECRET_ENV_VAR: "prod-secret-value"
+  GPG_PASSPHRASE: "prod-passphrase-67890"
+
+# Encrypted configuration file (base64 encoded .env.gpg)
+encryptedConfig: "jA0ECQMI0NCQWcu6vV//0sAfAe720dGx3e/xzwIJCOKDaHpWvkraFACSb7iQ4UP73H+i62X43HQFNtV2BDs5TthwU0iwOqj6sI9OvdoVFPF2EimTv4JvMwVoYeeQNqRQJQiuRw2w+s/+jHtowtgpMdUrZPVAzqI5oa/8CaraP5B0gZDSpMhbnZk89wQaEqUdJhMnpbSHXAAQgEIFQcELFSnuWjPiysQgZMEWYFq7MdWG3hxLUFHX6IacdWVA5vjxG3XT4lgY+KSkFFxWjB2lKpNHNAbE1G2faimOHpheNxizIAMzEsSonJZtnKxnTKAcYA=="

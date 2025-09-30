@@ -1,0 +1,6 @@
+# Ignore decrypted configuration files
+**/.env
+*.env
+
+# Keep only encrypted files
+!**/.env.gpg
